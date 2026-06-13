@@ -6,9 +6,9 @@
     <title>FreshLednice</title>
     <style>
         :root {
-            --bg-color: #f4f6f8;
+            --bg-color: #f3f4f6;
             --card-bg: #ffffff;
-            --text-dark: #1f2937;
+            --text-dark: #111827;
             --text-light: #6b7280;
             --primary: #3b82f6;
             --danger: #ef4444;
@@ -20,7 +20,7 @@
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
 
         body {
-            background-color: var(--bg-color);
+            background-color: #e5e7eb;
             color: var(--text-dark);
             height: 100vh;
             display: flex;
@@ -34,7 +34,7 @@
             background-color: var(--bg-color);
             position: relative;
             overflow: hidden;
-            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            box-shadow: 0 0 30px rgba(0,0,0,0.15);
             display: flex;
             flex-direction: column;
         }
@@ -44,12 +44,12 @@
             flex: 1;
             flex-direction: column;
             overflow-y: auto;
-            padding-bottom: 80px; /* Místo pro spodní menu */
-            animation: fadeIn 0.2s ease-in-out;
+            padding-bottom: 90px;
+            animation: fadeIn 0.25s ease-in-out;
         }
         .screen.active { display: flex; }
 
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
         /* HLAVIČKA */
         .header {
@@ -63,102 +63,136 @@
             top: 0;
             z-index: 10;
         }
-        .capacity-badge { background: #e0f2fe; color: var(--primary); padding: 0.4rem 0.8rem; border-radius: 20px; font-weight: bold; }
+        .header h2 { font-size: 1.4rem; font-weight: 700; }
+        .capacity-badge { background: #e0f2fe; color: var(--primary); padding: 0.4rem 0.8rem; border-radius: 20px; font-weight: bold; font-size: 0.9rem; }
         .capacity-badge.full { background: #fee2e2; color: var(--danger); }
 
         /* KARTY PRODUKTŮ */
         .item-list { padding: 1rem 1.5rem; }
         .item-card {
             background: var(--card-bg);
-            border-radius: 12px;
+            border-radius: 16px;
             padding: 1rem;
             margin-bottom: 1rem;
             display: flex;
             align-items: center;
             gap: 1rem;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
             border-left: 6px solid var(--border);
+            transition: all 0.2s;
         }
         .item-card.danger { border-left-color: var(--danger); }
         .item-card.warning { border-left-color: var(--warning); }
         .item-card.success { border-left-color: var(--success); }
 
-        .item-info { flex: 1; }
-        .item-name { font-weight: 600; font-size: 1.1rem; }
-        .item-expiry { font-size: 0.85rem; color: var(--text-light); }
-        .item-price-tag { font-size: 0.85rem; color: var(--success); font-weight: bold; margin-top: 4px; }
+        .item-photo {
+            width: 50px; height: 50px;
+            border-radius: 10px;
+            background: var(--bg-color);
+            display: flex; justify-content: center; align-items: center;
+            font-size: 1.5rem; object-fit: cover;
+        }
         
+        .item-info { flex: 1; }
+        .item-name { font-weight: 600; font-size: 1.05rem; margin-bottom: 2px; }
+        .item-expiry { font-size: 0.85rem; color: var(--text-light); }
+        .item-details { display: flex; gap: 0.5rem; align-items: center; margin-top: 4px; }
+        .item-price-tag { font-size: 0.8rem; color: var(--success); font-weight: 600; background: #d1fae5; padding: 2px 6px; border-radius: 6px; }
+        .item-qty-tag { font-size: 0.8rem; color: var(--text-light); font-weight: 600; background: var(--bg-color); padding: 2px 6px; border-radius: 6px; }
+
         .btn-eat {
-            background: #d1fae5;
-            color: var(--success);
-            border: none;
-            width: 40px; height: 40px;
+            background: #f3f4f6;
+            color: var(--text-dark);
+            border: 1px solid var(--border);
+            width: 44px; height: 44px;
             border-radius: 50%;
             font-size: 1.2rem;
             cursor: pointer;
             display: flex; justify-content: center; align-items: center;
+            transition: 0.2s;
         }
+        .btn-eat:active { background: var(--success); color: white; border-color: var(--success); transform: scale(0.9); }
 
         /* BOTTOM NAV */
         .bottom-nav {
             position: absolute; bottom: 0; width: 100%;
             background: var(--card-bg);
             display: flex; justify-content: space-around;
-            padding: 1rem; border-top: 1px solid var(--border);
+            padding: 1rem 0.5rem 1.5rem 0.5rem; 
+            border-top: 1px solid var(--border);
             z-index: 20;
+            box-shadow: 0 -4px 10px rgba(0,0,0,0.02);
         }
-        .nav-item { background: none; border: none; font-size: 1rem; color: var(--text-light); font-weight: bold; cursor: pointer; }
-        .nav-item.active { color: var(--primary); }
+        .nav-item { background: none; border: none; font-size: 0.95rem; color: var(--text-light); font-weight: 600; cursor: pointer; padding: 0.5rem 1rem; border-radius: 20px; }
+        .nav-item.active { background: #eff6ff; color: var(--primary); }
 
         /* FAB TLAČÍTKO */
         .fab {
-            position: absolute; bottom: 5rem; right: 1.5rem;
+            position: absolute; bottom: 5.5rem; right: 1.5rem;
             width: 60px; height: 60px;
             background: var(--primary); color: white; border: none; border-radius: 50%;
             font-size: 2rem; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4); z-index: 15; cursor: pointer;
+            display: flex; justify-content: center; align-items: center; padding-bottom: 4px;
         }
 
         /* BOTTOM SHEET PRO PŘIDÁNÍ */
-        .overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.5); opacity: 0; pointer-events: none; z-index: 30; transition: 0.3s; }
+        .overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.6); opacity: 0; pointer-events: none; z-index: 30; transition: 0.3s; backdrop-filter: blur(2px); }
         .overlay.active { opacity: 1; pointer-events: auto; }
 
         .bottom-sheet {
             position: absolute; bottom: 0; width: 100%;
             background: var(--card-bg); border-radius: 24px 24px 0 0;
-            padding: 2rem 1.5rem; transform: translateY(100%); transition: 0.3s; z-index: 40;
+            padding: 2rem 1.5rem; transform: translateY(100%); transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); z-index: 40;
         }
         .bottom-sheet.active { transform: translateY(0); }
         
-        .form-group { margin-bottom: 1rem; }
-        .form-group label { display: block; font-size: 0.9rem; color: var(--text-light); margin-bottom: 0.5rem; }
-        .form-input { width: 100%; padding: 0.8rem; border: 1px solid var(--border); border-radius: 8px; font-size: 1rem; }
+        .sheet-handle { width: 40px; height: 5px; background: #d1d5db; border-radius: 3px; margin: -1rem auto 1.5rem auto; }
+        
+        .form-group { margin-bottom: 1.2rem; }
+        .form-group label { display: block; font-size: 0.9rem; font-weight: 600; color: var(--text-light); margin-bottom: 0.5rem; }
+        .form-input { width: 100%; padding: 0.9rem; border: 1px solid var(--border); border-radius: 12px; font-size: 1rem; background: var(--bg-color); outline: none; }
+        .form-input:focus { border-color: var(--primary); background: white; }
         .input-row { display: flex; gap: 0.5rem; }
         
         .btn-icon {
             background: #e0f2fe; color: var(--primary); border: none;
-            width: 45px; border-radius: 8px; display: flex; justify-content: center; align-items: center; font-size: 1.2rem; cursor: pointer;
+            width: 50px; border-radius: 12px; display: flex; justify-content: center; align-items: center; font-size: 1.3rem; cursor: pointer;
+            overflow: hidden; position: relative;
         }
+        .btn-icon img { width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; }
         
+        .stepper { display: flex; align-items: center; gap: 1rem; background: var(--bg-color); padding: 0.5rem; border-radius: 12px; width: fit-content; }
+        .stepper button { width: 35px; height: 35px; border: none; background: white; border-radius: 8px; font-size: 1.2rem; cursor: pointer; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+        .stepper span { font-weight: 600; width: 20px; text-align: center; }
+
         .quick-dates { display: flex; gap: 0.5rem; margin-top: 0.5rem; }
-        .quick-date-btn { flex: 1; padding: 0.5rem; border: 1px solid var(--border); background: white; border-radius: 8px; cursor: pointer; font-size: 0.85rem;}
+        .quick-date-btn { flex: 1; padding: 0.6rem; border: 1px solid var(--border); background: white; border-radius: 10px; cursor: pointer; font-size: 0.85rem; font-weight: 600; color: var(--text-dark); transition: 0.2s;}
+        .quick-date-btn:active { background: var(--bg-color); }
         
-        .btn-submit { width: 100%; padding: 1rem; background: var(--primary); color: white; border: none; border-radius: 12px; font-weight: bold; font-size: 1.1rem; margin-top: 1rem; cursor: pointer; }
+        .btn-submit { width: 100%; padding: 1.1rem; background: var(--primary); color: white; border: none; border-radius: 14px; font-weight: bold; font-size: 1.1rem; margin-top: 0.5rem; cursor: pointer; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3); }
 
         /* PROFIL */
-        .stats-container { display: flex; gap: 1rem; padding: 1.5rem; }
-        .stat-box { flex: 1; background: white; padding: 1.5rem; border-radius: 12px; text-align: center; border: 1px solid var(--border); }
-        .stat-value { font-size: 2rem; font-weight: bold; color: var(--success); }
-        .stat-label { font-size: 0.9rem; color: var(--text-light); }
+        .profile-header { padding: 1.5rem; display: flex; align-items: center; gap: 1rem; }
+        .profile-avatar { width: 60px; height: 60px; background: var(--primary); color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 1.5rem; font-weight: bold; }
+        .profile-info h3 { font-size: 1.2rem; margin-bottom: 4px; }
+        .account-badge { background: #f3f4f6; padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: 600; color: var(--text-light); border: 1px solid var(--border); display: inline-block; }
+        
+        .stats-container { display: flex; gap: 1rem; padding: 0 1.5rem 1.5rem 1.5rem; }
+        .stat-box { flex: 1; background: white; padding: 1.5rem 1rem; border-radius: 16px; text-align: center; border: 1px solid var(--border); box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        .stat-value { font-size: 1.8rem; font-weight: 800; color: var(--success); margin-bottom: 4px; }
+        .stat-label { font-size: 0.85rem; color: var(--text-light); font-weight: 500; }
+
+        .settings-list { padding: 0 1.5rem; }
+        .settings-item { background: white; padding: 1rem; border-radius: 12px; margin-bottom: 0.5rem; border: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; font-weight: 500; }
+        .settings-item.premium { background: #fffbeb; border-color: #fde68a; color: #b45309; cursor: pointer; }
 
         /* PAYWALL MODAL */
-        .paywall-modal {
-            position: absolute; inset: 0; background: rgba(0,0,0,0.8); z-index: 50;
-            display: none; justify-content: center; align-items: center; padding: 1.5rem;
-        }
-        .paywall-content { background: white; padding: 2rem; border-radius: 16px; text-align: center; }
+        .paywall-modal { position: absolute; inset: 0; background: rgba(0,0,0,0.8); z-index: 50; display: none; justify-content: center; align-items: center; padding: 1.5rem; backdrop-filter: blur(4px); }
+        .paywall-content { background: white; padding: 2rem; border-radius: 20px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
         .paywall-content h3 { color: var(--danger); margin-bottom: 1rem; font-size: 1.5rem; }
-        .btn-premium { background: #111; color: white; border: none; padding: 1rem 2rem; border-radius: 25px; font-weight: bold; width: 100%; margin-top: 1.5rem; cursor: pointer; }
-        .btn-close-paywall { background: none; border: none; color: var(--text-light); margin-top: 1rem; cursor: pointer; text-decoration: underline; }
+        .paywall-content p { color: var(--text-light); line-height: 1.5; margin-bottom: 1.5rem; }
+        .btn-premium { background: linear-gradient(135deg, #f59e0b, #d97706); color: white; border: none; padding: 1rem 2rem; border-radius: 14px; font-weight: bold; width: 100%; cursor: pointer; font-size: 1.1rem; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3); }
+        .btn-close-paywall { background: none; border: none; color: var(--text-light); margin-top: 1rem; cursor: pointer; font-weight: 600; padding: 0.5rem; }
 
     </style>
 </head>
@@ -173,29 +207,43 @@
         </div>
         
         <div class="item-list" id="fridge-list">
-            <div class="item-card danger">
+            <div class="item-card danger" data-qty="1" data-price="120">
+                <div class="item-photo">🥩</div>
                 <div class="item-info">
                     <div class="item-name">Kuřecí prsa mletá</div>
-                    <div class="item-expiry" style="color:var(--danger)">Dnes!</div>
-                    <div class="item-price-tag">Hodnota: 120 Kč</div>
+                    <div class="item-expiry" style="color:var(--danger); font-weight:600;">Dnes!</div>
+                    <div class="item-details">
+                        <span class="item-price-tag">120 Kč/ks</span>
+                        <span class="item-qty-tag"><span class="qty-num">1</span> ks</span>
+                    </div>
                 </div>
-                <button class="btn-eat" onclick="eatItem(this, 120)">✓</button>
+                <button class="btn-eat" onclick="eatItem(this)">✓</button>
             </div>
-            <div class="item-card warning">
+
+            <div class="item-card warning" data-qty="2" data-price="45">
+                <div class="item-photo">🧀</div>
                 <div class="item-info">
                     <div class="item-name">Camembert</div>
-                    <div class="item-expiry" style="color:var(--warning)">Za 3 dny</div>
-                    <div class="item-price-tag">Hodnota: 45 Kč</div>
+                    <div class="item-expiry" style="color:var(--warning); font-weight:600;">Za 3 dny</div>
+                    <div class="item-details">
+                        <span class="item-price-tag">45 Kč/ks</span>
+                        <span class="item-qty-tag"><span class="qty-num">2</span> ks</span>
+                    </div>
                 </div>
-                <button class="btn-eat" onclick="eatItem(this, 45)">✓</button>
+                <button class="btn-eat" onclick="eatItem(this)">✓</button>
             </div>
-            <div class="item-card success">
+
+            <div class="item-card success" data-qty="4" data-price="35">
+                <div class="item-photo">🐾</div>
                 <div class="item-info">
-                    <div class="item-name">Zlatá Gouda</div>
+                    <div class="item-name">Kapsičky pro Sušenku</div>
                     <div class="item-expiry">Za 14 dní</div>
-                    <div class="item-price-tag">Hodnota: 60 Kč</div>
+                    <div class="item-details">
+                        <span class="item-price-tag">35 Kč/ks</span>
+                        <span class="item-qty-tag"><span class="qty-num">4</span> ks</span>
+                    </div>
                 </div>
-                <button class="btn-eat" onclick="eatItem(this, 60)">✓</button>
+                <button class="btn-eat" onclick="eatItem(this)">✓</button>
             </div>
         </div>
 
@@ -205,6 +253,14 @@
     <div id="screen-profile" class="screen">
         <div class="header"><h2>Můj Profil</h2></div>
         
+        <div class="profile-header">
+            <div class="profile-avatar">J</div>
+            <div class="profile-info">
+                <h3>Jan Koukal</h3>
+                <div class="account-badge">Free verze (Limit 5 položek)</div>
+            </div>
+        </div>
+
         <div class="stats-container">
             <div class="stat-box">
                 <div id="stat-money" class="stat-value">0 Kč</div>
@@ -212,12 +268,23 @@
             </div>
             <div class="stat-box">
                 <div id="stat-items" class="stat-value" style="color:var(--primary)">0 ks</div>
-                <div class="stat-label">Zachráněné jídlo</div>
+                <div class="stat-label">Zachráněné porce</div>
             </div>
         </div>
         
-        <div style="padding: 1.5rem;">
-            <p style="color: var(--text-light); text-align: center;">Zde bude později správa předplatného a další nastavení účtu.</p>
+        <div class="settings-list">
+            <div class="settings-item premium" onclick="document.getElementById('paywall').style.display='flex'">
+                <span>⭐ Odemknout Premium</span>
+                <span>249 Kč</span>
+            </div>
+            <div class="settings-item">
+                <span>Nastavení notifikací</span>
+                <span>></span>
+            </div>
+            <div class="settings-item">
+                <span>Kategorie potravin</span>
+                <span>></span>
+            </div>
         </div>
     </div>
 
@@ -228,17 +295,31 @@
 
     <div id="overlay" class="overlay" onclick="closeAddSheet()"></div>
     <div id="bottom-sheet" class="bottom-sheet">
+        <div class="sheet-handle"></div>
+        
         <div class="form-group">
             <label>Co přidáváme?</label>
             <div class="input-row">
-                <input type="text" id="input-name" class="form-input" placeholder="Např. Jogurt...">
-                <input type="file" id="camera-input" accept="image/*" capture="environment" style="display:none;">
-                <label for="camera-input" class="btn-icon">📷</label>
+                <input type="text" id="input-name" class="form-input" placeholder="Např. Jogurt, Maso...">
+                
+                <input type="file" id="camera-input" accept="image/*" style="display:none;" onchange="handlePhotoUpload(event)">
+                <label for="camera-input" class="btn-icon" id="photo-preview-btn">
+                    📷
+                </label>
+            </div>
+        </div>
+
+        <div class="form-group" style="display: flex; justify-content: space-between; align-items: center;">
+            <label style="margin: 0;">Počet kusů</label>
+            <div class="stepper">
+                <button onclick="updateFormQty(-1)">-</button>
+                <span id="form-qty-val">1</span>
+                <button onclick="updateFormQty(1)">+</button>
             </div>
         </div>
 
         <div class="form-group">
-            <label>Cena (Pro výpočet úspor)</label>
+            <label>Cena za kus (Kč)</label>
             <input type="number" id="input-price" class="form-input" placeholder="Např. 45">
         </div>
 
@@ -247,7 +328,7 @@
             <input type="date" id="input-date" class="form-input">
             <div class="quick-dates">
                 <button class="quick-date-btn" onclick="addDays(1)">+ 1 den</button>
-                <button class="quick-date-btn" onclick="addDays(7)">+ týden</button>
+                <button class="quick-date-btn" onclick="addDays(7)">+ 1 týden</button>
                 <button class="quick-date-btn" onclick="addDays(30)">+ 1 měsíc</button>
             </div>
         </div>
@@ -258,7 +339,7 @@
     <div id="paywall" class="paywall-modal">
         <div class="paywall-content">
             <h3>Tvá lednice je plná! 🚨</h3>
-            <p>Dosáhl jsi limitu 5 produktů ve verzi zdarma. Podpoř vývoj a získej neomezený prostor navždy.</p>
+            <p>Dosáhl jsi limitu 5 unikátních produktů ve verzi zdarma. Podpoř vývoj a získej neomezený prostor.</p>
             <button class="btn-premium" onclick="alert('Zde by proběhla platba přes Stripe.')">Odemknout navždy (249 Kč)</button>
             <button class="btn-close-paywall" onclick="closePaywall()">Zpět k lednici</button>
         </div>
@@ -267,15 +348,51 @@
 </div>
 
 <script>
-    // Úvodní proměnné v paměti aplikace
+    // Úvodní proměnné
     let itemCount = 3; 
     const maxItems = 5;
-    
-    // Statistiky zachráněného jídla
     let savedItems = 0;
     let savedMoney = 0;
+    
+    // Proměnné formuláře
+    let formQty = 1;
+    let currentPhotoBase64 = null;
 
-    // Aktualizace čísla v hlavičce (kapacita)
+    // Inicializace dnešního data do formuláře při načtení
+    document.getElementById('input-date').valueAsDate = new Date();
+
+    // 1. ZPRACOVÁNÍ FOTKY Z KAMERY
+    function handlePhotoUpload(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                currentPhotoBase64 = e.target.result;
+                const btn = document.getElementById('photo-preview-btn');
+                btn.innerHTML = `<img src="${currentPhotoBase64}" alt="Náhled">`;
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    // 2. KROKOVÁNÍ KUSŮ VE FORMULÁŘI
+    function updateFormQty(change) {
+        formQty += change;
+        if (formQty < 1) formQty = 1;
+        document.getElementById('form-qty-val').innerText = formQty;
+    }
+
+    // 3. CHYTRÉ PŘIČÍTÁNÍ DATUMU (Sčítání)
+    function addDays(days) {
+        const dateInput = document.getElementById('input-date');
+        // Pokud je už nějaké datum vybráno, vezmeme ho, jinak vezmeme dnešek
+        let currentDate = dateInput.value ? new Date(dateInput.value) : new Date();
+        
+        currentDate.setDate(currentDate.getDate() + days);
+        dateInput.value = currentDate.toISOString().split('T')[0];
+    }
+
+    // 4. KONTROLA KAPACITY A OTEVŘENÍ FORMULÁŘE
     function updateCapacityUI() {
         const badge = document.getElementById('capacity-indicator');
         badge.innerText = `${itemCount} / ${maxItems}`;
@@ -286,27 +403,19 @@
         }
     }
 
-    // Tlačítko SNĚZENO
-    function eatItem(btnElement, price) {
-        // 1. Přidáme do statistik
-        savedMoney += price;
-        savedItems += 1;
-        
-        // Aktualizace UI profilu
-        document.getElementById('stat-money').innerText = savedMoney + " Kč";
-        document.getElementById('stat-items').innerText = savedItems + " ks";
-
-        // 2. Odebrání z lednice
-        btnElement.closest('.item-card').remove();
-        itemCount--;
-        updateCapacityUI();
-    }
-
-    // Kontrola před otevřením přidávacího okna
     function checkLimitAndOpenAdd() {
         if (itemCount >= maxItems) {
             document.getElementById('paywall').style.display = 'flex';
         } else {
+            // Reset formuláře před otevřením
+            document.getElementById('input-name').value = '';
+            document.getElementById('input-price').value = '';
+            document.getElementById('input-date').valueAsDate = new Date();
+            formQty = 1;
+            document.getElementById('form-qty-val').innerText = formQty;
+            currentPhotoBase64 = null;
+            document.getElementById('photo-preview-btn').innerHTML = '📷';
+            
             document.getElementById('bottom-sheet').classList.add('active');
             document.getElementById('overlay').classList.add('active');
         }
@@ -316,49 +425,74 @@
         document.getElementById('bottom-sheet').classList.remove('active');
         document.getElementById('overlay').classList.remove('active');
     }
+    function closePaywall() { document.getElementById('paywall').style.display = 'none'; }
 
-    function closePaywall() {
-        document.getElementById('paywall').style.display = 'none';
-    }
-
-    // Přepínání obrazovek (Lednice / Profil)
+    // 5. PŘEPÍNÁNÍ OBRAZOVEK
     function switchScreen(screenName, btnElement) {
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
         document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
-        
         document.getElementById('screen-' + screenName).classList.add('active');
         btnElement.classList.add('active');
     }
 
-    // Rychlé datum
-    function addDays(days) {
-        const date = new Date();
-        date.setDate(date.getDate() + days);
-        document.getElementById('input-date').value = date.toISOString().split('T')[0];
+    // 6. SNĚZENÍ POLOŽKY (Snížení počtu kusů nebo smazání)
+    function eatItem(btnElement) {
+        const card = btnElement.closest('.item-card');
+        let currentQty = parseInt(card.getAttribute('data-qty'));
+        let pricePerItem = parseInt(card.getAttribute('data-price')) || 0;
+
+        // Přidáme do celkových statistik v profilu
+        savedMoney += pricePerItem;
+        savedItems += 1;
+        document.getElementById('stat-money').innerText = savedMoney + " Kč";
+        document.getElementById('stat-items').innerText = savedItems + " ks";
+
+        // Odečteme kus
+        currentQty -= 1;
+        card.setAttribute('data-qty', currentQty);
+
+        if (currentQty <= 0) {
+            // Pokud došly kusy, smažeme celou kartu a uvolníme místo v lednici (Limit)
+            card.remove();
+            itemCount--;
+            updateCapacityUI();
+        } else {
+            // Jinak jen přepíšeme číslo na kartě
+            card.querySelector('.qty-num').innerText = currentQty;
+            
+            // Malá animace pro vizuální odezvu
+            card.style.transform = "scale(0.98)";
+            setTimeout(() => card.style.transform = "scale(1)", 150);
+        }
     }
 
-    // Funkce pro simulaci přidání nového produktu
+    // 7. PŘIDÁNÍ NOVÉHO PRODUKTU Z FORMULÁŘE
     function addNewItem() {
         const name = document.getElementById('input-name').value || 'Nový produkt';
         const price = parseInt(document.getElementById('input-price').value) || 0;
         
+        // Zpracování fotky nebo defaultní ikony
+        let photoHtml = `<div class="item-photo">🛒</div>`;
+        if (currentPhotoBase64) {
+            photoHtml = `<img src="${currentPhotoBase64}" class="item-photo" alt="Foto">`;
+        }
+        
         const html = `
-            <div class="item-card success">
+            <div class="item-card success" data-qty="${formQty}" data-price="${price}">
+                ${photoHtml}
                 <div class="item-info">
                     <div class="item-name">${name}</div>
                     <div class="item-expiry">Právě přidáno</div>
-                    <div class="item-price-tag">Hodnota: ${price} Kč</div>
+                    <div class="item-details">
+                        <span class="item-price-tag">${price} Kč/ks</span>
+                        <span class="item-qty-tag"><span class="qty-num">${formQty}</span> ks</span>
+                    </div>
                 </div>
-                <button class="btn-eat" onclick="eatItem(this, ${price})">✓</button>
+                <button class="btn-eat" onclick="eatItem(this)">✓</button>
             </div>
         `;
         
-        document.getElementById('fridge-list').insertAdjacentHTML('beforeend', html);
-        
-        // Vyčištění formuláře
-        document.getElementById('input-name').value = '';
-        document.getElementById('input-price').value = '';
-        document.getElementById('input-date').value = '';
+        document.getElementById('fridge-list').insertAdjacentHTML('afterbegin', html);
         
         itemCount++;
         updateCapacityUI();
