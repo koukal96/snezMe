@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FreshLednice</title>
+    <style>
+        /* --- ZÁKLADNÍ NASTAVENÍ A BARVY --- */
+        :root {
+            --bg-color: #f4f6f8;
+            --card-bg: #ffffff;
+            --text-dark: #1f2937;
+            --text-light: #6b7280;
+            --primary: #3b82f6;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --success: #10b981;
+            --border: #e5e7eb;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Omezení šířky pro počítače, aby to vypadalo jako mobil */
+        .app-container {
+            width: 100%;
+            max-width: 480px;
+            height: 100vh;
+            background-color: var(--bg-color);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+
+        /* --- OBRAZOVKY --- */
+        .screen {
+            display: none;
+            height: 100%;
+            width: 100%;
+            flex-direction: column;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        .screen.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* --- PŘIHLÁŠENÍ (LOGIN SCREEN) --- */
+        .login-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            text-align: center;
+        }
+        .login-content h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--primary);
+        }
+        .login-content p {
+            color: var(--text-light);
+            margin-bottom: 3rem;
+        }
+        .btn-login {
+            width: 100%;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+        .btn-google { background-color: #fff; color: #000; border: 1px solid var(--border); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .btn-apple { background-color: #000; color: #fff; }
+
+        /* --- HLAVNÍ OBRAZOVKA (DASHBOARD) --- */
+        .header {
+            padding: 1.5rem 1.5rem 1rem 1.5rem;
+            background: var(--card-bg);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+        }
+        .header h2 { font-size: 1.5rem; }
+        .capacity-badge {
+            background: #e0f2fe;
+            color: var(--primary);
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        /* Kategorie / Filtry */
+        .filters {
+            display: flex;
+            overflow-x: auto;
+            padding: 1rem 1.5rem;
+            gap: 0.5rem;
+            background: var(--card-bg);
+            border-bottom: 1px solid var(--border);
+            scrollbar-width: none; /* Skryje posuvník ve Firefoxu */
+        }
+        .filters::-webkit-scrollbar { display: none; } /* Skryje posuvník v Chrome */
+        
+        .chip {
+            padding: 0.5rem 1rem;
+            background: var(--bg-color);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            white-space: nowrap;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+        .chip.active {
+            background: var(--text-dark);
+            color: #fff;
+            border-color: var(--text-dark);
+        }
+
+        /* Seznam položek */
+        .item-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem 1.5rem;
+            padding-bottom: 100px; /* Místo pro FAB */
+        }
+        .item-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            position: relative;
+        }
+        /* Barevné kódování trvanlivosti */
+        .item-card.danger { border-left: 6px solid var(--danger); }
+        .item-card.warning { border-left: 6px solid var(--warning); }
+        .item-card.success { border-left: 6px solid var(--success); }
+
+        .item-icon {
+            width: 45px;
+            height: 45px;
+            background: var(--bg-color);
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5rem;
+        }
+        .item-info { flex: 1; }
+        .item-name { font-weight: 600; font-size: 1.1rem; margin-bottom: 0.2rem; }
+        .item-expiry { font-size: 0.85rem; color: var(--text-light); }
+        .item-danger-text { color: var(--danger); font-weight: bold; }
+        .item-warning-text { color: var(--warning); font-weight: bold; }
+        
+        .item-quantity {
+            background: var(--bg-color);
+            padding: 0.3rem 0.6rem;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-light);
+        }
+
+        /* Plovoucí tlačítko (FAB) */
+        .fab {
+            position: absolute;
+            bottom: 2rem;
+            right: 1.5rem;
+            width: 65px;
+            height: 65px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2rem;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+            cursor: pointer;
+            border: none;
+            transition: transform 0.2s;
+        }
+        .fab:active { transform: scale(0.95); }
+
+        /* --- BOTTOM SHEET (PŘIDÁNÍ PRODUKTU) --- */
+        .overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+        .overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .bottom-sheet {
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            background: var(--card-bg);
+            border-radius: 24px 24px 0 0;
+            padding: 2rem 1.5rem;
+            transform: translateY(100%);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
+        }
+        .bottom-sheet.active {
+            transform: translateY(0);
+        }
+        
+        /* Indikátor pro stažení dolů */
+        .sheet-handle {
+            width: 40px; height: 5px;
+            background: #d1d5db;
+            border-radius: 3px;
+            margin: -1rem auto 1.5rem auto;
+        }
+
+        .form-group { margin-bottom: 1.5rem; }
+        .form-group label { display: block; font-size: 0.9rem; font-weight: 600; color: var(--text-light); margin-bottom: 0.5rem; }
+        
+        .input-row { display: flex; gap: 1rem; align-items: center; }
+        .form-input {
+            width: 100%;
+            padding: 1rem;
+            background: var(--bg-color);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            font-size: 1rem;
+            outline: none;
+        }
+        .form-input:focus { border-color: var(--primary); }
+        
+        .btn-icon {
+            background: #e0f2fe;
+            color: var(--primary);
+            border: none;
+            width: 50px; height: 50px;
+            border-radius: 12px;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .stepper { display: flex; align-items: center; gap: 1rem; background: var(--bg-color); padding: 0.5rem; border-radius: 12px; }
+        .stepper button { width: 35px; height: 35px; border: none; background: white; border-radius: 8px; font-size: 1.2rem; cursor: pointer; }
+        .stepper span { font-weight: 600; width: 20px; text-align: center; }
+
+        .quick-dates { display: flex; gap: 0.5rem; margin-top: 0.5rem; }
+        .quick-date-btn { flex: 1; padding: 0.5rem; border: 1px solid var(--border); background: white; border-radius: 8px; font-size: 0.8rem; cursor: pointer; }
+
+        .btn-submit {
+            width: 100%;
+            padding: 1.2rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+
+    <!-- 1. OBRAZOVKA: PŘIHLÁŠENÍ -->
+    <div id="login-screen" class="screen active">
+        <div class="login-content">
+            <h1>FreshLednice</h1>
+            <p>Zastav plýtvání. Šetři peníze.</p>
+            
+            <button class="btn-login btn-google" onclick="login()">
+                Pokračovat přes Google
+            </button>
+            <button class="btn-login btn-apple" onclick="login()">
+                Pokračovat přes Apple
+            </button>
+        </div>
+    </div>
+
+    <!-- 2. OBRAZOVKA: MOJE LEDNICE -->
+    <div id="main-screen" class="screen">
+        <div class="header">
+            <h2>Moje lednice</h2>
+            <div class="capacity-badge">3 / 5</div>
+        </div>
+
+        <div class="filters">
+            <div class="chip active">Vše</div>
+            <div class="chip">🥩 Maso</div>
+            <div class="chip">🧀 Mléčné</div>
+            <div class="chip">🥦 Zelenina</div>
+            <div class="chip">🧊 Mražené</div>
+        </div>
+
+        <div class="item-list">
+            <!-- Příklad: Červená karta (Hoří to) -->
+            <div class="item-card danger">
+                <div class="item-icon">🥩</div>
+                <div class="item-info">
+                    <div class="item-name">Kuřecí prsa mletá</div>
+                    <div class="item-expiry item-danger-text">Expiruje DNES!</div>
+                </div>
+                <div class="item-quantity">1 ks</div>
+            </div>
+
+            <!-- Příklad: Oranžová karta (Blíží se) -->
+            <div class="item-card warning">
+                <div class="item-icon">🧀</div>
+                <div class="item-info">
+                    <div class="item-name">Camembert</div>
+                    <div class="item-expiry item-warning-text">Zbývají 3 dny</div>
+                </div>
+                <div class="item-quantity">2 ks</div>
+            </div>
+
+            <!-- Příklad: Zelená karta (V pohodě) -->
+            <div class="item-card success">
+                <div class="item-icon">🥚</div>
+                <div class="item-info">
+                    <div class="item-name">Vejce (M)</div>
+                    <div class="item-expiry">Za 14 dní (27.6.)</div>
+                </div>
+                <div class="item-quantity">10 ks</div>
+            </div>
+        </div>
+
+        <!-- Přidávací tlačítko -->
+        <button class="fab" onclick="toggleBottomSheet()">+</button>
+    </div>
+
+    <!-- 3. BOTTOM SHEET (Přidání produktu) -->
+    <div id="overlay" class="overlay" onclick="toggleBottomSheet()"></div>
+    <div id="bottom-sheet" class="bottom-sheet">
+        <div class="sheet-handle"></div>
+        
+        <div class="form-group">
+            <label>Co přidáváme?</label>
+            <div class="input-row">
+                <input type="text" class="form-input" placeholder="Např. Jogurt, Maso...">
+                <button class="btn-icon">📷</button>
+            </div>
+        </div>
+
+        <div class="form-group" style="display: flex; justify-content: space-between; align-items: center;">
+            <label style="margin: 0;">Počet kusů</label>
+            <div class="stepper">
+                <button onclick="updateQty(-1)">-</button>
+                <span id="qty-val">1</span>
+                <button onclick="updateQty(1)">+</button>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Expirace (DMT)</label>
+            <input type="date" class="form-input">
+            <div class="quick-dates">
+                <button class="quick-date-btn">+ 3 dny</button>
+                <button class="quick-date-btn">+ 1 týden</button>
+                <button class="quick-date-btn">+ 1 měsíc</button>
+            </div>
+        </div>
+
+        <button class="btn-submit" onclick="toggleBottomSheet()">Přidat do lednice</button>
+    </div>
+
+</div>
+
+<!-- JEDNODUCHÝ JAVASCRIPT PRO UKÁZKU UI -->
+<script>
+    // Přepnutí z Login obrazovky do aplikace
+    function login() {
+        document.getElementById('login-screen').classList.remove('active');
+        document.getElementById('main-screen').classList.add('active');
+    }
+
+    // Vysunutí panelu pro přidání produktu
+    function toggleBottomSheet() {
+        const sheet = document.getElementById('bottom-sheet');
+        const overlay = document.getElementById('overlay');
+        sheet.classList.toggle('active');
+        overlay.classList.toggle('active');
+    }
+
+    // Krokování počtu kusů
+    let qty = 1;
+    function updateQty(change) {
+        qty += change;
+        if (qty < 1) qty = 1;
+        document.getElementById('qty-val').innerText = qty;
+    }
+</script>
+
+</body>
+</html>
