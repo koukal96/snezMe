@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>FreshLednice</title>
     <style>
-        /* --- ZÁKLADNÍ NASTAVENÍ A BARVY --- */
         :root {
             --bg-color: #f4f6f8;
             --card-bg: #ffffff;
@@ -18,12 +17,7 @@
             --border: #e5e7eb;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
 
         body {
             background-color: var(--bg-color);
@@ -33,7 +27,6 @@
             justify-content: center;
         }
 
-        /* Omezení šířky pro počítače, aby to vypadalo jako mobil */
         .app-container {
             width: 100%;
             max-width: 480px;
@@ -42,62 +35,23 @@
             position: relative;
             overflow: hidden;
             box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
         }
 
-        /* --- OBRAZOVKY --- */
         .screen {
             display: none;
-            height: 100%;
-            width: 100%;
-            flex-direction: column;
-            animation: fadeIn 0.3s ease-in-out;
-        }
-        .screen.active {
-            display: flex;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        /* --- PŘIHLÁŠENÍ (LOGIN SCREEN) --- */
-        .login-content {
             flex: 1;
-            display: flex;
             flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 2rem;
-            text-align: center;
+            overflow-y: auto;
+            padding-bottom: 80px; /* Místo pro spodní menu */
+            animation: fadeIn 0.2s ease-in-out;
         }
-        .login-content h1 {
-            font-size: 2.5rem;
-            margin-bottom: 0.5rem;
-            color: var(--primary);
-        }
-        .login-content p {
-            color: var(--text-light);
-            margin-bottom: 3rem;
-        }
-        .btn-login {
-            width: 100%;
-            padding: 1rem;
-            margin-bottom: 1rem;
-            border: none;
-            border-radius: 12px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 10px;
-        }
-        .btn-google { background-color: #fff; color: #000; border: 1px solid var(--border); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        .btn-apple { background-color: #000; color: #fff; }
+        .screen.active { display: flex; }
 
-        /* --- HLAVNÍ OBRAZOVKA (DASHBOARD) --- */
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* HLAVIČKA */
         .header {
             padding: 1.5rem 1.5rem 1rem 1.5rem;
             background: var(--card-bg);
@@ -105,51 +59,15 @@
             justify-content: space-between;
             align-items: center;
             border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 10;
         }
-        .header h2 { font-size: 1.5rem; }
-        .capacity-badge {
-            background: #e0f2fe;
-            color: var(--primary);
-            padding: 0.4rem 0.8rem;
-            border-radius: 20px;
-            font-weight: bold;
-            font-size: 0.9rem;
-        }
+        .capacity-badge { background: #e0f2fe; color: var(--primary); padding: 0.4rem 0.8rem; border-radius: 20px; font-weight: bold; }
+        .capacity-badge.full { background: #fee2e2; color: var(--danger); }
 
-        /* Kategorie / Filtry */
-        .filters {
-            display: flex;
-            overflow-x: auto;
-            padding: 1rem 1.5rem;
-            gap: 0.5rem;
-            background: var(--card-bg);
-            border-bottom: 1px solid var(--border);
-            scrollbar-width: none; /* Skryje posuvník ve Firefoxu */
-        }
-        .filters::-webkit-scrollbar { display: none; } /* Skryje posuvník v Chrome */
-        
-        .chip {
-            padding: 0.5rem 1rem;
-            background: var(--bg-color);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            white-space: nowrap;
-            font-size: 0.9rem;
-            cursor: pointer;
-        }
-        .chip.active {
-            background: var(--text-dark);
-            color: #fff;
-            border-color: var(--text-dark);
-        }
-
-        /* Seznam položek */
-        .item-list {
-            flex: 1;
-            overflow-y: auto;
-            padding: 1rem 1.5rem;
-            padding-bottom: 100px; /* Místo pro FAB */
-        }
+        /* KARTY PRODUKTŮ */
+        .item-list { padding: 1rem 1.5rem; }
         .item-card {
             background: var(--card-bg);
             border-radius: 12px;
@@ -159,270 +77,292 @@
             align-items: center;
             gap: 1rem;
             box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-            position: relative;
+            border-left: 6px solid var(--border);
         }
-        /* Barevné kódování trvanlivosti */
-        .item-card.danger { border-left: 6px solid var(--danger); }
-        .item-card.warning { border-left: 6px solid var(--warning); }
-        .item-card.success { border-left: 6px solid var(--success); }
+        .item-card.danger { border-left-color: var(--danger); }
+        .item-card.warning { border-left-color: var(--warning); }
+        .item-card.success { border-left-color: var(--success); }
 
-        .item-icon {
-            width: 45px;
-            height: 45px;
-            background: var(--bg-color);
-            border-radius: 8px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 1.5rem;
-        }
         .item-info { flex: 1; }
-        .item-name { font-weight: 600; font-size: 1.1rem; margin-bottom: 0.2rem; }
+        .item-name { font-weight: 600; font-size: 1.1rem; }
         .item-expiry { font-size: 0.85rem; color: var(--text-light); }
-        .item-danger-text { color: var(--danger); font-weight: bold; }
-        .item-warning-text { color: var(--warning); font-weight: bold; }
+        .item-price-tag { font-size: 0.85rem; color: var(--success); font-weight: bold; margin-top: 4px; }
         
-        .item-quantity {
-            background: var(--bg-color);
-            padding: 0.3rem 0.6rem;
-            border-radius: 8px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            color: var(--text-light);
-        }
-
-        /* Plovoucí tlačítko (FAB) */
-        .fab {
-            position: absolute;
-            bottom: 2rem;
-            right: 1.5rem;
-            width: 65px;
-            height: 65px;
-            background: var(--primary);
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 2rem;
-            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
-            cursor: pointer;
+        .btn-eat {
+            background: #d1fae5;
+            color: var(--success);
             border: none;
-            transition: transform 0.2s;
+            width: 40px; height: 40px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex; justify-content: center; align-items: center;
         }
-        .fab:active { transform: scale(0.95); }
 
-        /* --- BOTTOM SHEET (PŘIDÁNÍ PRODUKTU) --- */
-        .overlay {
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.5);
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s;
+        /* BOTTOM NAV */
+        .bottom-nav {
+            position: absolute; bottom: 0; width: 100%;
+            background: var(--card-bg);
+            display: flex; justify-content: space-around;
+            padding: 1rem; border-top: 1px solid var(--border);
+            z-index: 20;
         }
-        .overlay.active {
-            opacity: 1;
-            pointer-events: auto;
+        .nav-item { background: none; border: none; font-size: 1rem; color: var(--text-light); font-weight: bold; cursor: pointer; }
+        .nav-item.active { color: var(--primary); }
+
+        /* FAB TLAČÍTKO */
+        .fab {
+            position: absolute; bottom: 5rem; right: 1.5rem;
+            width: 60px; height: 60px;
+            background: var(--primary); color: white; border: none; border-radius: 50%;
+            font-size: 2rem; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4); z-index: 15; cursor: pointer;
         }
+
+        /* BOTTOM SHEET PRO PŘIDÁNÍ */
+        .overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.5); opacity: 0; pointer-events: none; z-index: 30; transition: 0.3s; }
+        .overlay.active { opacity: 1; pointer-events: auto; }
 
         .bottom-sheet {
-            position: absolute;
-            bottom: 0; left: 0; right: 0;
-            background: var(--card-bg);
-            border-radius: 24px 24px 0 0;
-            padding: 2rem 1.5rem;
-            transform: translateY(100%);
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
+            position: absolute; bottom: 0; width: 100%;
+            background: var(--card-bg); border-radius: 24px 24px 0 0;
+            padding: 2rem 1.5rem; transform: translateY(100%); transition: 0.3s; z-index: 40;
         }
-        .bottom-sheet.active {
-            transform: translateY(0);
-        }
+        .bottom-sheet.active { transform: translateY(0); }
         
-        /* Indikátor pro stažení dolů */
-        .sheet-handle {
-            width: 40px; height: 5px;
-            background: #d1d5db;
-            border-radius: 3px;
-            margin: -1rem auto 1.5rem auto;
-        }
-
-        .form-group { margin-bottom: 1.5rem; }
-        .form-group label { display: block; font-size: 0.9rem; font-weight: 600; color: var(--text-light); margin-bottom: 0.5rem; }
-        
-        .input-row { display: flex; gap: 1rem; align-items: center; }
-        .form-input {
-            width: 100%;
-            padding: 1rem;
-            background: var(--bg-color);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            font-size: 1rem;
-            outline: none;
-        }
-        .form-input:focus { border-color: var(--primary); }
+        .form-group { margin-bottom: 1rem; }
+        .form-group label { display: block; font-size: 0.9rem; color: var(--text-light); margin-bottom: 0.5rem; }
+        .form-input { width: 100%; padding: 0.8rem; border: 1px solid var(--border); border-radius: 8px; font-size: 1rem; }
+        .input-row { display: flex; gap: 0.5rem; }
         
         .btn-icon {
-            background: #e0f2fe;
-            color: var(--primary);
-            border: none;
-            width: 50px; height: 50px;
-            border-radius: 12px;
-            font-size: 1.5rem;
-            cursor: pointer;
+            background: #e0f2fe; color: var(--primary); border: none;
+            width: 45px; border-radius: 8px; display: flex; justify-content: center; align-items: center; font-size: 1.2rem; cursor: pointer;
         }
-
-        .stepper { display: flex; align-items: center; gap: 1rem; background: var(--bg-color); padding: 0.5rem; border-radius: 12px; }
-        .stepper button { width: 35px; height: 35px; border: none; background: white; border-radius: 8px; font-size: 1.2rem; cursor: pointer; }
-        .stepper span { font-weight: 600; width: 20px; text-align: center; }
-
+        
         .quick-dates { display: flex; gap: 0.5rem; margin-top: 0.5rem; }
-        .quick-date-btn { flex: 1; padding: 0.5rem; border: 1px solid var(--border); background: white; border-radius: 8px; font-size: 0.8rem; cursor: pointer; }
+        .quick-date-btn { flex: 1; padding: 0.5rem; border: 1px solid var(--border); background: white; border-radius: 8px; cursor: pointer; font-size: 0.85rem;}
+        
+        .btn-submit { width: 100%; padding: 1rem; background: var(--primary); color: white; border: none; border-radius: 12px; font-weight: bold; font-size: 1.1rem; margin-top: 1rem; cursor: pointer; }
 
-        .btn-submit {
-            width: 100%;
-            padding: 1.2rem;
-            background: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-size: 1.1rem;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 1rem;
+        /* PROFIL */
+        .stats-container { display: flex; gap: 1rem; padding: 1.5rem; }
+        .stat-box { flex: 1; background: white; padding: 1.5rem; border-radius: 12px; text-align: center; border: 1px solid var(--border); }
+        .stat-value { font-size: 2rem; font-weight: bold; color: var(--success); }
+        .stat-label { font-size: 0.9rem; color: var(--text-light); }
+
+        /* PAYWALL MODAL */
+        .paywall-modal {
+            position: absolute; inset: 0; background: rgba(0,0,0,0.8); z-index: 50;
+            display: none; justify-content: center; align-items: center; padding: 1.5rem;
         }
+        .paywall-content { background: white; padding: 2rem; border-radius: 16px; text-align: center; }
+        .paywall-content h3 { color: var(--danger); margin-bottom: 1rem; font-size: 1.5rem; }
+        .btn-premium { background: #111; color: white; border: none; padding: 1rem 2rem; border-radius: 25px; font-weight: bold; width: 100%; margin-top: 1.5rem; cursor: pointer; }
+        .btn-close-paywall { background: none; border: none; color: var(--text-light); margin-top: 1rem; cursor: pointer; text-decoration: underline; }
+
     </style>
 </head>
 <body>
 
 <div class="app-container">
 
-    <!-- 1. OBRAZOVKA: PŘIHLÁŠENÍ -->
-    <div id="login-screen" class="screen active">
-        <div class="login-content">
-            <h1>FreshLednice</h1>
-            <p>Zastav plýtvání. Šetři peníze.</p>
-            
-            <button class="btn-login btn-google" onclick="login()">
-                Pokračovat přes Google
-            </button>
-            <button class="btn-login btn-apple" onclick="login()">
-                Pokračovat přes Apple
-            </button>
-        </div>
-    </div>
-
-    <!-- 2. OBRAZOVKA: MOJE LEDNICE -->
-    <div id="main-screen" class="screen">
+    <div id="screen-fridge" class="screen active">
         <div class="header">
             <h2>Moje lednice</h2>
-            <div class="capacity-badge">3 / 5</div>
+            <div id="capacity-indicator" class="capacity-badge">3 / 5</div>
         </div>
-
-        <div class="filters">
-            <div class="chip active">Vše</div>
-            <div class="chip">🥩 Maso</div>
-            <div class="chip">🧀 Mléčné</div>
-            <div class="chip">🥦 Zelenina</div>
-            <div class="chip">🧊 Mražené</div>
-        </div>
-
-        <div class="item-list">
-            <!-- Příklad: Červená karta (Hoří to) -->
+        
+        <div class="item-list" id="fridge-list">
             <div class="item-card danger">
-                <div class="item-icon">🥩</div>
                 <div class="item-info">
                     <div class="item-name">Kuřecí prsa mletá</div>
-                    <div class="item-expiry item-danger-text">Expiruje DNES!</div>
+                    <div class="item-expiry" style="color:var(--danger)">Dnes!</div>
+                    <div class="item-price-tag">Hodnota: 120 Kč</div>
                 </div>
-                <div class="item-quantity">1 ks</div>
+                <button class="btn-eat" onclick="eatItem(this, 120)">✓</button>
             </div>
-
-            <!-- Příklad: Oranžová karta (Blíží se) -->
             <div class="item-card warning">
-                <div class="item-icon">🧀</div>
                 <div class="item-info">
                     <div class="item-name">Camembert</div>
-                    <div class="item-expiry item-warning-text">Zbývají 3 dny</div>
+                    <div class="item-expiry" style="color:var(--warning)">Za 3 dny</div>
+                    <div class="item-price-tag">Hodnota: 45 Kč</div>
                 </div>
-                <div class="item-quantity">2 ks</div>
+                <button class="btn-eat" onclick="eatItem(this, 45)">✓</button>
             </div>
-
-            <!-- Příklad: Zelená karta (V pohodě) -->
             <div class="item-card success">
-                <div class="item-icon">🥚</div>
                 <div class="item-info">
-                    <div class="item-name">Vejce (M)</div>
-                    <div class="item-expiry">Za 14 dní (27.6.)</div>
+                    <div class="item-name">Zlatá Gouda</div>
+                    <div class="item-expiry">Za 14 dní</div>
+                    <div class="item-price-tag">Hodnota: 60 Kč</div>
                 </div>
-                <div class="item-quantity">10 ks</div>
+                <button class="btn-eat" onclick="eatItem(this, 60)">✓</button>
             </div>
         </div>
 
-        <!-- Přidávací tlačítko -->
-        <button class="fab" onclick="toggleBottomSheet()">+</button>
+        <button class="fab" onclick="checkLimitAndOpenAdd()">+</button>
     </div>
 
-    <!-- 3. BOTTOM SHEET (Přidání produktu) -->
-    <div id="overlay" class="overlay" onclick="toggleBottomSheet()"></div>
-    <div id="bottom-sheet" class="bottom-sheet">
-        <div class="sheet-handle"></div>
+    <div id="screen-profile" class="screen">
+        <div class="header"><h2>Můj Profil</h2></div>
         
+        <div class="stats-container">
+            <div class="stat-box">
+                <div id="stat-money" class="stat-value">0 Kč</div>
+                <div class="stat-label">Ušetřeno celkem</div>
+            </div>
+            <div class="stat-box">
+                <div id="stat-items" class="stat-value" style="color:var(--primary)">0 ks</div>
+                <div class="stat-label">Zachráněné jídlo</div>
+            </div>
+        </div>
+        
+        <div style="padding: 1.5rem;">
+            <p style="color: var(--text-light); text-align: center;">Zde bude později správa předplatného a další nastavení účtu.</p>
+        </div>
+    </div>
+
+    <div class="bottom-nav">
+        <button class="nav-item active" onclick="switchScreen('fridge', this)">❄️ Lednice</button>
+        <button class="nav-item" onclick="switchScreen('profile', this)">👤 Profil</button>
+    </div>
+
+    <div id="overlay" class="overlay" onclick="closeAddSheet()"></div>
+    <div id="bottom-sheet" class="bottom-sheet">
         <div class="form-group">
             <label>Co přidáváme?</label>
             <div class="input-row">
-                <input type="text" class="form-input" placeholder="Např. Jogurt, Maso...">
-                <button class="btn-icon">📷</button>
+                <input type="text" id="input-name" class="form-input" placeholder="Např. Jogurt...">
+                <input type="file" id="camera-input" accept="image/*" capture="environment" style="display:none;">
+                <label for="camera-input" class="btn-icon">📷</label>
             </div>
         </div>
 
-        <div class="form-group" style="display: flex; justify-content: space-between; align-items: center;">
-            <label style="margin: 0;">Počet kusů</label>
-            <div class="stepper">
-                <button onclick="updateQty(-1)">-</button>
-                <span id="qty-val">1</span>
-                <button onclick="updateQty(1)">+</button>
-            </div>
+        <div class="form-group">
+            <label>Cena (Pro výpočet úspor)</label>
+            <input type="number" id="input-price" class="form-input" placeholder="Např. 45">
         </div>
 
         <div class="form-group">
             <label>Expirace (DMT)</label>
-            <input type="date" class="form-input">
+            <input type="date" id="input-date" class="form-input">
             <div class="quick-dates">
-                <button class="quick-date-btn">+ 3 dny</button>
-                <button class="quick-date-btn">+ 1 týden</button>
-                <button class="quick-date-btn">+ 1 měsíc</button>
+                <button class="quick-date-btn" onclick="addDays(1)">+ 1 den</button>
+                <button class="quick-date-btn" onclick="addDays(7)">+ týden</button>
+                <button class="quick-date-btn" onclick="addDays(30)">+ 1 měsíc</button>
             </div>
         </div>
 
-        <button class="btn-submit" onclick="toggleBottomSheet()">Přidat do lednice</button>
+        <button class="btn-submit" onclick="addNewItem()">Přidat do lednice</button>
+    </div>
+
+    <div id="paywall" class="paywall-modal">
+        <div class="paywall-content">
+            <h3>Tvá lednice je plná! 🚨</h3>
+            <p>Dosáhl jsi limitu 5 produktů ve verzi zdarma. Podpoř vývoj a získej neomezený prostor navždy.</p>
+            <button class="btn-premium" onclick="alert('Zde by proběhla platba přes Stripe.')">Odemknout navždy (249 Kč)</button>
+            <button class="btn-close-paywall" onclick="closePaywall()">Zpět k lednici</button>
+        </div>
     </div>
 
 </div>
 
-<!-- JEDNODUCHÝ JAVASCRIPT PRO UKÁZKU UI -->
 <script>
-    // Přepnutí z Login obrazovky do aplikace
-    function login() {
-        document.getElementById('login-screen').classList.remove('active');
-        document.getElementById('main-screen').classList.add('active');
+    // Úvodní proměnné v paměti aplikace
+    let itemCount = 3; 
+    const maxItems = 5;
+    
+    // Statistiky zachráněného jídla
+    let savedItems = 0;
+    let savedMoney = 0;
+
+    // Aktualizace čísla v hlavičce (kapacita)
+    function updateCapacityUI() {
+        const badge = document.getElementById('capacity-indicator');
+        badge.innerText = `${itemCount} / ${maxItems}`;
+        if(itemCount >= maxItems) {
+            badge.classList.add('full');
+        } else {
+            badge.classList.remove('full');
+        }
     }
 
-    // Vysunutí panelu pro přidání produktu
-    function toggleBottomSheet() {
-        const sheet = document.getElementById('bottom-sheet');
-        const overlay = document.getElementById('overlay');
-        sheet.classList.toggle('active');
-        overlay.classList.toggle('active');
+    // Tlačítko SNĚZENO
+    function eatItem(btnElement, price) {
+        // 1. Přidáme do statistik
+        savedMoney += price;
+        savedItems += 1;
+        
+        // Aktualizace UI profilu
+        document.getElementById('stat-money').innerText = savedMoney + " Kč";
+        document.getElementById('stat-items').innerText = savedItems + " ks";
+
+        // 2. Odebrání z lednice
+        btnElement.closest('.item-card').remove();
+        itemCount--;
+        updateCapacityUI();
     }
 
-    // Krokování počtu kusů
-    let qty = 1;
-    function updateQty(change) {
-        qty += change;
-        if (qty < 1) qty = 1;
-        document.getElementById('qty-val').innerText = qty;
+    // Kontrola před otevřením přidávacího okna
+    function checkLimitAndOpenAdd() {
+        if (itemCount >= maxItems) {
+            document.getElementById('paywall').style.display = 'flex';
+        } else {
+            document.getElementById('bottom-sheet').classList.add('active');
+            document.getElementById('overlay').classList.add('active');
+        }
+    }
+
+    function closeAddSheet() {
+        document.getElementById('bottom-sheet').classList.remove('active');
+        document.getElementById('overlay').classList.remove('active');
+    }
+
+    function closePaywall() {
+        document.getElementById('paywall').style.display = 'none';
+    }
+
+    // Přepínání obrazovek (Lednice / Profil)
+    function switchScreen(screenName, btnElement) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+        
+        document.getElementById('screen-' + screenName).classList.add('active');
+        btnElement.classList.add('active');
+    }
+
+    // Rychlé datum
+    function addDays(days) {
+        const date = new Date();
+        date.setDate(date.getDate() + days);
+        document.getElementById('input-date').value = date.toISOString().split('T')[0];
+    }
+
+    // Funkce pro simulaci přidání nového produktu
+    function addNewItem() {
+        const name = document.getElementById('input-name').value || 'Nový produkt';
+        const price = parseInt(document.getElementById('input-price').value) || 0;
+        
+        const html = `
+            <div class="item-card success">
+                <div class="item-info">
+                    <div class="item-name">${name}</div>
+                    <div class="item-expiry">Právě přidáno</div>
+                    <div class="item-price-tag">Hodnota: ${price} Kč</div>
+                </div>
+                <button class="btn-eat" onclick="eatItem(this, ${price})">✓</button>
+            </div>
+        `;
+        
+        document.getElementById('fridge-list').insertAdjacentHTML('beforeend', html);
+        
+        // Vyčištění formuláře
+        document.getElementById('input-name').value = '';
+        document.getElementById('input-price').value = '';
+        document.getElementById('input-date').value = '';
+        
+        itemCount++;
+        updateCapacityUI();
+        closeAddSheet();
     }
 </script>
 
